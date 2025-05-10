@@ -4,153 +4,227 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ROAST Records – Vault Studio</title>
-  <meta name="theme-color" content="#00ffe1" />
+  <meta name="theme-color" content="#00ffe1">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Space Grotesk', sans-serif;
+    }
     body {
       background: #000;
       color: #fff;
-      padding: 16px;
+      overflow-x: hidden;
     }
-    .section {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(14px);
+    .background-waveform {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+      background: radial-gradient(#0f0f0f 50%, #000 100%);
+      animation: waveformGlow 8s linear infinite;
+      opacity: 0.1;
+    }
+    @keyframes waveformGlow {
+      0% { background-position: 0 0; }
+      50% { background-position: 100px 50px; }
+      100% { background-position: 0 0; }
+    }
+
+    .logo-spin {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      animation: slowSpin 20s linear infinite;
+      margin: 40px auto 20px auto;
+      display: block;
+      border: 3px solid #00ffe1;
+    }
+    @keyframes slowSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .container {
       max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: auto;
+      padding: 0 20px 60px;
     }
-    .title {
-      font-size: 22px;
-      color: #00ffe1;
-      margin-bottom: 16px;
+
+    .form-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 20px rgba(0,255,225,0.1);
+    }
+
+    .form-box h1 {
       text-align: center;
+      color: #00ffe1;
+      font-size: 28px;
+      margin-bottom: 30px;
+      font-family: 'Orbitron', sans-serif;
     }
-    .form-input {
+
+    input, select {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background: #111;
-      border: 1px solid #333;
-      border-radius: 10px;
-      color: #00ffe1;
-      margin-bottom: 16px;
-    }
-    .neon-button {
-      background: transparent;
       border: 2px solid #00ffe1;
-      color: #00ffe1;
-      padding: 12px 16px;
-      font-weight: bold;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      box-shadow: 0 0 8px #00ffe1;
+    }
+
+    .neon-button {
       width: 100%;
-      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 2px solid #00ffe1;
+      background: transparent;
+      color: #00ffe1;
+      border-radius: 12px;
+      cursor: pointer;
       transition: all 0.3s ease;
     }
+
     .neon-button:hover {
       background: #00ffe1;
       color: #000;
     }
-    .player-badge {
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    .badge-fixed {
+      position: fixed;
+      top: 16px;
+      right: 16px;
       display: flex;
       align-items: center;
       background: #111;
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 20px;
       border: 2px solid #00ffe1;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .player-badge img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 12px;
-      border: 2px solid inherit;
-    }
-    .badge-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .badge-info .nickname { color: #00ffe1; font-weight: bold; }
-    .badge-info .handle { color: #ccc; font-size: 12px; }
-    .badge-stats { font-size: 11px; color: #aaa; margin-top: 4px; }
-    .back-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: #111;
-      border: 2px solid #00ffe1;
-      color: #00ffe1;
-      padding: 8px 14px;
-      font-size: 13px;
-      border-radius: 10px;
+      border-radius: 12px;
+      padding: 8px 12px;
       z-index: 1000;
+    }
+
+    .badge-fixed img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 2px solid #00ffe1;
+    }
+
+    .badge-fixed .nickname {
+      font-weight: bold;
+      color: #00ffe1;
+      font-size: 14px;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      padding: 10px 18px;
+      border: 2px solid #00ffe1;
+      background: #111;
+      color: #00ffe1;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: bold;
+      z-index: 1000;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: #666;
     }
   </style>
 </head>
 <body>
 
-<!-- Back to Vault Button -->
-<a href="https://quantum-vault-y2kxroast.netlify.app/" class="back-button">← Back to Vault</a>
+<!-- Background -->
+<div class="background-waveform"></div>
 
-<!-- Player Badge -->
-<div class="player-badge" id="playerBadge">
-  <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" alt="PFP" />
-  <div class="badge-info">
+<!-- Top Controls -->
+<a href="https://quantum-vault-y2kxroast.netlify.app/" class="back-btn">← Return to Vault</a>
+
+<!-- Floating Player Badge -->
+<div class="badge-fixed">
+  <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" alt="pfp" />
+  <div>
     <div class="nickname" id="badgeNickname">anon</div>
-    <div class="handle" id="badgeHandle">𝕏: @handle</div>
-    <div class="badge-stats">
-      <span id="badgeGames">Games: 0</span>
-      <span id="badgeWins">Wins: 0</span>
-      <span id="badgeY2K">Y2K: 0</span>
-    </div>
+    <div style="font-size: 11px; color: #ccc;" id="badgeHandle">𝕏: @handle</div>
   </div>
 </div>
 
-<!-- Submission Section -->
-<div class="section">
-  <div class="title">Submit a Track to ROAST Records</div>
-  <form id="trackForm">
-    <select id="trackType" class="form-input">
-      <option value="Anthem">Anthem</option>
-      <option value="Theme Song">Theme Song</option>
-      <option value="Roast">Roast</option>
-    </select>
-    <input type="text" id="projectName" placeholder="Project or Person Name" class="form-input" required>
-    <input type="text" id="genre" placeholder="Genre / Mood" class="form-input">
-    <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" class="form-input">
-    
-    <label style="font-size:14px;">
-      <input type="checkbox" id="mintRequest" onchange="toggleMint()"> Mint this track?
-    </label>
-    
-    <div id="mintOptions" style="display:none;">
-      <input type="number" id="mintCount" class="form-input" min="1" max="10" value="10" placeholder="Number of NFTs (1–10)">
-      <input type="number" id="mintPrice" class="form-input" min="1" value="50" placeholder="Mint Price (CRO)">
-    </div>
+<!-- Logo -->
+<img src="https://uploadthing.com/roast-logo-spin.png" class="logo-spin" alt="ROAST Logo" />
 
-    <label style="font-size:14px;">
-      <input type="checkbox" id="isProject"> Is this for a token/project? (buyback eligible)
-    </label>
+<!-- Form Container -->
+<div class="container">
+  <div class="form-box">
+    <h1>Submit to ROAST Records</h1>
+    <form id="trackForm">
+      <select id="trackType">
+        <option value="Anthem">Anthem</option>
+        <option value="Theme Song">Theme Song</option>
+        <option value="Roast">Roast</option>
+      </select>
 
-    <button type="button" class="neon-button mt-4" onclick="submitTrack()">Submit – 20 CRO</button>
-    <div id="submissionStatus" class="text-center text-sm text-pink-400 mt-4"></div>
-  </form>
+      <input type="text" id="projectName" placeholder="Project or Person Name" required />
+      <input type="text" id="genre" placeholder="Genre / Mood" />
+      <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" />
+
+      <div class="toggle-row">
+        <input type="checkbox" id="mintRequest" onchange="toggleMint()" />
+        <label for="mintRequest">Mint this track?</label>
+      </div>
+
+      <div id="mintOptions" style="display: none;">
+        <input type="number" id="mintCount" placeholder="Max Supply (1–10)" min="1" max="10" value="10" />
+        <input type="number" id="mintPrice" placeholder="Mint Price (CRO)" min="1" value="50" />
+      </div>
+
+      <div class="toggle-row">
+        <input type="checkbox" id="isProject" />
+        <label for="isProject">This is a token/project (Buyback eligible)</label>
+      </div>
+
+      <button type="button" class="neon-button" onclick="submitTrack()">Submit to Studio – 20 CRO</button>
+      <div id="submissionStatus" style="text-align:center; margin-top:12px; font-size:13px; color:#0ff;"></div>
+    </form>
+  </div>
 </div>
 
-<!-- Next: Firebase, WalletConnect, Form Prefill -->
-<script type="module">
-// Placeholder for Part 2 logic
+<footer>
+  Powered by Y2K & $ROAST — 2000 → ∞
+</footer>
+
+<script>
 function toggleMint() {
-  const checked = document.getElementById("mintRequest").checked;
-  document.getElementById("mintOptions").style.display = checked ? "block" : "none";
+  const show = document.getElementById("mintRequest").checked;
+  document.getElementById("mintOptions").style.display = show ? "block" : "none";
 }
 </script>
 </body>
