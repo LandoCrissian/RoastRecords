@@ -316,38 +316,43 @@ async function submitTrack() {
   if (!name) return alert("Enter a project or person name.");
   if (!window.ethereum) return alert("Wallet not found");
 
+  const CRO_CHAIN_ID = '0x19';
+  const CRO_PARAMS = [{
+    chainId: CRO_CHAIN_ID,
+    chainName: 'Cronos Mainnet',
+    nativeCurrency: { name: 'CRO', symbol: 'CRO', decimals: 18 },
+    rpcUrls: ['https://evm.cronos.org'],
+    blockExplorerUrls: ['https://cronoscan.com']
+  }];
+
   try {
+    // Force switch to Cronos before continuing
+    const currentChain = await window.ethereum.request({ method: 'eth_chainId' });
+    if (currentChain !== CRO_CHAIN_ID) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: CRO_CHAIN_ID }]
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: CRO_PARAMS
+          });
+        } else {
+          throw switchError;
+        }
+      }
+    }
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
 
-// Force Cronos
-try {
-  await window.ethereum.request({
-    method: 'wallet_switchEthereumChain',
-    params: [{ chainId: '0x19' }]
-  });
-} catch (switchError) {
-  if (switchError.code === 4902) {
-    await window.ethereum.request({
-      method: 'wallet_addEthereumChain',
-      params: [{
-        chainId: '0x19',
-        chainName: 'Cronos Mainnet',
-        nativeCurrency: { name: 'CRO', symbol: 'CRO', decimals: 18 },
-        rpcUrls: ['https://evm.cronos.org'],
-        blockExplorerUrls: ['https://cronoscan.com']
-      }]
+    const tx = await signer.sendTransaction({
+      to: CRO_RECIPIENT,
+      value: ethers.utils.parseEther("20")
     });
-  } else {
-    throw switchError;
-  }
-}
-
-const signer = provider.getSigner();
-const tx = await signer.sendTransaction({
-  to: CRO_RECIPIENT,
-  value: ethers.utils.parseEther("20")
-});
 
     const track = {
       wallet: currentWallet,
