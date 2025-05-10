@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ROAST Records – Vault Studio</title>
-  <meta name="theme-color" content="#000000">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#000000" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     :root {
@@ -24,36 +24,67 @@
       background: #000;
       color: #fff;
       overflow-x: hidden;
+      padding-top: 140px;
     }
 
-    header {
-      width: 100%;
-      height: 200px;
-      background: url('https://raw.githubusercontent.com/LandoCrissian/RoastRecords/refs/heads/main/IMG_5456.png') no-repeat center;
-      background-size: cover;
-      border-bottom: 2px solid #111;
+    .floating-badge {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      padding: 12px 18px;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 12px;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 16px rgba(0,255,225,0.15);
+      animation: fadein 0.6s ease-out;
     }
 
-    .logo {
-      width: 120px;
-      height: 120px;
+    .floating-badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 2px;
+      background: var(--border-glow);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translate(-50%, -20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .floating-badge img {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      border: 4px solid transparent;
-      background: #000;
-      padding: 4px;
-      animation: spin 20s linear infinite;
-      background-image: url('https://raw.githubusercontent.com/LandoCrissian/RoastRecords/refs/heads/main/IMG_5445.jpeg');
-      background-size: cover;
-      background-position: center;
+      border: 2px solid #00ffe1;
+      object-fit: cover;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .badge-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+    }
+
+    .badge-info .nickname {
+      color: #00ffe1;
+      font-weight: bold;
+    }
+
+    .badge-info .handle {
+      color: #ccc;
     }
 
     .container {
@@ -80,9 +111,7 @@
       border-radius: 20px;
       padding: 2px;
       background: var(--border-glow);
-      -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: destination-out;
       mask-composite: exclude;
       pointer-events: none;
@@ -143,20 +172,6 @@
       color: #000;
     }
 
-    .return-btn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      padding: 8px 14px;
-      border: 2px solid #00ffe1;
-      background: #111;
-      color: #00ffe1;
-      font-size: 13px;
-      font-weight: bold;
-      border-radius: 10px;
-      z-index: 999;
-    }
-
     footer {
       text-align: center;
       color: #999;
@@ -165,13 +180,17 @@
     }
   </style>
 </head>
+
 <body>
 
-<a href="https://quantum-vault-y2kxroast.netlify.app/" class="return-btn">← Return to Vault</a>
-
-<header>
-  <div class="logo"></div>
-</header>
+<!-- Player Badge (Floating Header) -->
+<div class="floating-badge">
+  <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" alt="pfp" />
+  <div class="badge-info">
+    <div class="nickname" id="badgeNickname">anon</div>
+    <div class="handle" id="badgeHandle">@handle</div>
+  </div>
+</div>
 
 <div class="container">
   <div class="form-box">
@@ -207,11 +226,11 @@
   </div>
 </div>
 
-  <!-- SCRIPTS -->
+  <!-- Firebase & Submission Script -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp
+  getFirestore, doc, getDoc, addDoc, collection
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -229,6 +248,7 @@ const db = getFirestore(app);
 let currentWallet = "";
 const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
 
+// Prefill badge
 async function connectWallet() {
   if (!window.ethereum) return alert("Please install MetaMask");
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -236,13 +256,23 @@ async function connectWallet() {
   const signer = provider.getSigner();
   currentWallet = (await signer.getAddress()).toLowerCase();
 
-  const snap = await getDoc(doc(db, "users", currentWallet));
-  if (snap.exists()) {
-    const data = snap.data();
-    if (data.username) document.getElementById("handleInput").value = "@" + data.xHandle;
+  const userSnap = await getDoc(doc(db, "users", currentWallet));
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    document.getElementById("badgeNickname").textContent = data.username || "anon";
+    document.getElementById("badgeHandle").textContent = data.xHandle ? `@${data.xHandle}` : "@handle";
+    document.getElementById("badgePFP").src = data.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+    if (data.xHandle) document.getElementById("handleInput").value = `@${data.xHandle}`;
   }
 }
 
+// Mint toggle logic
+function toggleMint() {
+  const show = document.getElementById("mintRequest").checked;
+  document.getElementById("mintOptions").style.display = show ? "block" : "none";
+}
+
+// Submission logic
 async function submitTrack() {
   const type = document.getElementById("trackType").value;
   const name = document.getElementById("projectName").value.trim();
@@ -253,7 +283,8 @@ async function submitTrack() {
   const mintPrice = document.getElementById("mintPrice").value;
   const isProject = document.getElementById("isProject").checked;
 
-  if (!name) return alert("Enter a project or person name.");
+  if (!name) return alert("Enter a name.");
+  if (!currentWallet) return alert("Connect wallet first.");
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
@@ -262,7 +293,7 @@ async function submitTrack() {
     value: ethers.utils.parseEther("20")
   });
 
-  const trackData = {
+  await addDoc(collection(db, "tracks"), {
     wallet: currentWallet,
     type,
     name,
@@ -274,12 +305,11 @@ async function submitTrack() {
     isProject,
     txHash: tx.hash,
     timestamp: Date.now()
-  };
+  });
 
-  await addDoc(collection(db, "tracks"), trackData);
   document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted!</span>`;
   document.getElementById("trackForm").reset();
-  document.getElementById("mintOptions").style.display = "none";
+  toggleMint();
 }
 
 window.addEventListener("load", connectWallet);
