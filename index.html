@@ -9,100 +9,42 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     :root {
-      --glass: rgba(255, 255, 255, 0.05);
-      --glow: linear-gradient(90deg, #00ffe1, #ff00ff, #ff9900);
-      --textGlow: 0 0 12px rgba(255, 79, 31, 0.6);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --border-glow: linear-gradient(90deg, #00ffe1, #ff00ff, #ff9900);
+      --primary: #ff4f1f;
+      --text-glow: 0 0 10px rgba(255, 79, 31, 0.6);
     }
-
     * {
       margin: 0; padding: 0; box-sizing: border-box;
       font-family: 'Space Grotesk', sans-serif;
     }
-
     body {
       background: #000;
       color: #fff;
       overflow-x: hidden;
     }
-
-    .badge-header {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      background: #000;
-      padding: 14px 20px 10px;
-      display: flex;
-      justify-content: center;
+    .player-badge {
+      margin: 24px auto -20px;
+      width: fit-content;
+      padding: 10px 16px;
+      background: #111;
+      border-radius: 16px;
+      border: 2px solid;
+      border-image: var(--border-glow) 1;
+      box-shadow: 0 0 10px rgba(0,255,225,0.4);
+      text-align: center;
     }
-
-    .badge-info {
-      display: flex;
-      align-items: center;
-      background: var(--glass);
-      border-radius: 14px;
-      padding: 8px 16px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-      box-shadow: 0 0 12px rgba(0,255,225,0.1);
-      position: relative;
-      gap: 12px;
-      max-width: 300px;
+    header {
+      height: 100px;
+      background: none;
     }
-
-    .badge-info::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      padding: 2px;
-      background: var(--glow);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: destination-out;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .badge-info img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #00ffe1;
-    }
-
-    .badge-details {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .badge-details .name {
-      font-weight: bold;
-      color: #00ffe1;
-    }
-
-    .badge-details .handle {
-      font-size: 13px;
-      color: #ccc;
-    }
-
     .container {
       max-width: 600px;
       margin: auto;
-      padding: 30px 20px 80px;
+      padding: 30px 20px 60px;
     }
-
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
-      text-align: center;
-      color: #fff;
-      margin: 30px 0 20px;
-      text-shadow: var(--textGlow);
-    }
-
     .form-box {
-      background: var(--glass);
+      background: var(--glass-bg);
       border-radius: 20px;
       padding: 28px;
       backdrop-filter: blur(14px);
@@ -111,20 +53,26 @@
       box-shadow: 0 0 25px rgba(0, 255, 225, 0.05);
       position: relative;
     }
-
     .form-box::before {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: 20px;
       padding: 2px;
-      background: var(--glow);
+      background: var(--border-glow);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: destination-out;
       mask-composite: exclude;
       pointer-events: none;
     }
-
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 24px;
+      text-shadow: var(--text-glow);
+    }
     input, select {
       width: 100%;
       padding: 14px;
@@ -133,100 +81,73 @@
       border-radius: 12px;
       color: #fff;
       font-size: 15px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       outline: none;
       transition: 0.2s;
       box-shadow: 0 0 5px #00ffe1;
     }
-
     input:focus, select:focus {
       border-color: #ff00ff;
       box-shadow: 0 0 12px #ff00ff;
     }
-
-    .checkbox-row {
+    .toggle {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      font-size: 13px;
       gap: 10px;
-      margin: 16px 0;
-      flex-wrap: wrap;
+      margin-bottom: 12px;
     }
-
-    .checkbox-row input[type="checkbox"] {
-      margin-top: 4px;
+    label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
     }
-
-    .checkbox-row label {
-      color: #ccc;
-      font-size: 14px;
-      max-width: calc(100% - 30px);
-      word-break: break-word;
-    }
-
-    #mintOptions {
-      padding: 14px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 14px;
-      margin-bottom: 20px;
-      border: 1px dashed #00ffe1;
-    }
-
     .neon-button {
       width: 100%;
       padding: 14px;
       font-size: 16px;
       font-weight: bold;
       border: 2px solid #00ffe1;
-      background: transparent;
-      color: #00ffe1;
+      background: #00ffe1;
+      color: #000;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 0 12px rgba(0, 255, 225, 0.3);
     }
-
     .neon-button:hover {
-      background: #00ffe1;
-      color: #000;
+      background: #000;
+      color: #00ffe1;
     }
-
-    #submissionStatus {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 13px;
-    }
-
-    .popup-alert {
+    .return-btn {
       position: fixed;
       top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #111;
-      padding: 14px 20px;
-      border-radius: 12px;
+      left: 20px;
+      padding: 8px 14px;
       border: 2px solid #00ffe1;
-      box-shadow: 0 0 12px #00ffe1;
-      z-index: 9999;
-      font-size: 14px;
+      background: #111;
+      color: #00ffe1;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 10px;
+      z-index: 999;
+    }
+    #buybackTag {
+      font-size: 13px;
+      color: #00ffe1;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-
-<!-- Badge Header -->
-<div class="badge-header">
-  <div class="badge-info">
-    <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
-    <div class="badge-details">
-      <div class="name" id="badgeNickname">anon</div>
-      <div class="handle" id="badgeHandle">@handle</div>
-    </div>
-  </div>
+<a href="https://quantum-vault-y2kxroast.netlify.app/" class="return-btn">← Return to Vault</a>
+<header></header>
+<div class="player-badge">
+  <span id="badgeText">anon<br><span style="font-size:12px">@handle</span></span>
 </div>
-
 <div class="container">
-  <h1>Submit a Track to ROAST Records</h1>
   <div class="form-box">
+    <h1>Submit a Track to ROAST Records</h1>
     <form id="trackForm">
       <select id="trackType">
         <option value="Anthem">Anthem</option>
@@ -236,33 +157,43 @@
       <input type="text" id="projectName" placeholder="Project or Person Name" required />
       <input type="text" id="genre" placeholder="Genre / Mood" />
       <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" />
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="mintRequest" onchange="toggleMint()" />
+      <div class="toggle">
+        <input type="checkbox" id="mintRequest" />
         <label for="mintRequest">Mint this track?</label>
       </div>
-
       <div id="mintOptions" style="display: none;">
-        <input type="number" id="mintCount" placeholder="Max Supply (1–10)" min="1" max="10" value="10" />
-        <input type="number" id="mintPrice" placeholder="Mint Price (CRO)" min="1" value="50" />
+        <label>How many NFTs? (1–10)</label>
+        <select id="mintCount">
+          <option value="1">1 Copy</option>
+          <option value="2">2 Copies</option>
+          <option value="3">3 Copies</option>
+          <option value="4">4 Copies</option>
+          <option value="5">5 Copies</option>
+          <option value="6">6 Copies</option>
+          <option value="7">7 Copies</option>
+          <option value="8">8 Copies</option>
+          <option value="9">9 Copies</option>
+          <option value="10" selected>10 Copies</option>
+        </select>
+        <label>Mint Price (per NFT in CRO)</label>
+        <input type="number" id="mintPrice" min="1" value="50" />
+        <p style="font-size:12px; color:#888;">You're choosing to release a collectible version of this track.</p>
       </div>
-
-      <div class="checkbox-row">
+      <div class="toggle">
         <input type="checkbox" id="isProject" />
         <label for="isProject">Is this for a token/project? (Buyback eligible)</label>
       </div>
-
+      <div id="buybackTag" style="display: none;">✓ Track is now buyback eligible. Proceeds may fund token buybacks.</div>
       <button type="button" class="neon-button" onclick="submitTrack()">Submit – 20 CRO</button>
-      <div id="submissionStatus"></div>
+      <div id="submissionStatus" style="text-align:center; margin-top:12px; font-size:13px;"></div>
     </form>
   </div>
 </div>
 
-  <!-- FIREBASE + LOGIC -->
-<script type="module">
+  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp
+  getFirestore, doc, getDoc, addDoc, collection
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -276,32 +207,35 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
 let currentWallet = "";
-
-function toggleMint() {
-  const mintOptions = document.getElementById("mintOptions");
-  mintOptions.style.display = document.getElementById("mintRequest").checked ? "block" : "none";
-}
+const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
 
 async function connectWallet() {
   if (!window.ethereum) return alert("Please install MetaMask");
-
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
   currentWallet = (await signer.getAddress()).toLowerCase();
 
-  const userSnap = await getDoc(doc(db, "users", currentWallet));
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    document.getElementById("badgeNickname").textContent = data.username || "anon";
-    document.getElementById("badgeHandle").textContent = "@" + (data.xHandle || "handle");
-    document.getElementById("badgePFP").src = data.pfpUrl || `https://api.dicebear.com/6.x/pixel-art/svg?seed=anon`;
-    document.getElementById("handleInput").value = data.xHandle ? `@${data.xHandle}` : "";
+  const snap = await getDoc(doc(db, "users", currentWallet));
+  if (snap.exists()) {
+    const data = snap.data();
+    const handle = data.xHandle || "handle";
+    const name = data.username || "anon";
+    document.getElementById("handleInput").value = "@" + handle;
+    document.getElementById("badgeText").innerHTML = `${name}<br><span style="font-size:12px">@${handle}</span>`;
   }
 }
+
+document.getElementById("mintRequest").addEventListener("change", () => {
+  const show = document.getElementById("mintRequest").checked;
+  document.getElementById("mintOptions").style.display = show ? "block" : "none";
+});
+
+document.getElementById("isProject").addEventListener("change", () => {
+  const visible = document.getElementById("isProject").checked;
+  document.getElementById("buybackTag").style.display = visible ? "block" : "none";
+});
 
 async function submitTrack() {
   const type = document.getElementById("trackType").value;
@@ -314,38 +248,33 @@ async function submitTrack() {
   const isProject = document.getElementById("isProject").checked;
 
   if (!name) return alert("Enter a project or person name.");
-  if (!window.ethereum) return alert("Wallet not found");
 
-  try {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const tx = await signer.sendTransaction({
-      to: CRO_RECIPIENT,
-      value: ethers.utils.parseEther("20")
-    });
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const tx = await signer.sendTransaction({
+    to: CRO_RECIPIENT,
+    value: ethers.utils.parseEther("20")
+  });
 
-    const track = {
-      wallet: currentWallet,
-      type,
-      name,
-      genre,
-      handle,
-      mint,
-      mintMax: mint ? mintMax : null,
-      mintPrice: mint ? mintPrice : null,
-      isProject,
-      txHash: tx.hash,
-      timestamp: Date.now()
-    };
+  const trackData = {
+    wallet: currentWallet,
+    type,
+    name,
+    genre,
+    handle,
+    mint,
+    mintMax: mint ? mintMax : null,
+    mintPrice: mint ? mintPrice : null,
+    isProject,
+    txHash: tx.hash,
+    timestamp: Date.now()
+  };
 
-    await addDoc(collection(db, "tracks"), track);
-    document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted!</span>`;
-    document.getElementById("trackForm").reset();
-    document.getElementById("mintOptions").style.display = "none";
-  } catch (err) {
-    console.error("Submit error:", err);
-    alert("Submission failed: " + err.message);
-  }
+  await addDoc(collection(db, "tracks"), trackData);
+  document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted successfully!</span>`;
+  document.getElementById("trackForm").reset();
+  document.getElementById("mintOptions").style.display = "none";
+  document.getElementById("buybackTag").style.display = "none";
 }
 
 window.addEventListener("load", connectWallet);
