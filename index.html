@@ -4,71 +4,118 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ROAST Records – Vault Studio</title>
-  <meta name="theme-color" content="#ff4f1f">
+  <meta name="theme-color" content="#000000">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --border-glow: linear-gradient(90deg, #00ffe1, #ff00ff, #ff9900);
+      --primary: #ff4f1f;
+      --text-glow: 0 0 10px rgba(255, 79, 31, 0.6);
+    }
+
     * {
       margin: 0; padding: 0; box-sizing: border-box;
       font-family: 'Space Grotesk', sans-serif;
     }
+
     body {
       background: #000;
       color: #fff;
       overflow-x: hidden;
     }
+
     header {
       width: 100%;
+      height: 200px;
       background: url('https://raw.githubusercontent.com/LandoCrissian/RoastRecords/refs/heads/main/IMG_5456.png') no-repeat center;
       background-size: cover;
-      height: 180px;
+      border-bottom: 2px solid #111;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      border-bottom: 3px solid #ff4f1f;
+      padding-bottom: 12px;
     }
+
     .logo {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 4px solid #fff;
+      border: 4px solid transparent;
       background: #000;
-      padding: 6px;
+      padding: 4px;
+      animation: spin 20s linear infinite;
+      background-image: url('https://raw.githubusercontent.com/LandoCrissian/RoastRecords/refs/heads/main/IMG_5445.jpeg');
+      background-size: cover;
+      background-position: center;
     }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .container {
       max-width: 600px;
       margin: auto;
-      padding: 24px;
+      padding: 30px 20px 60px;
     }
+
+    .form-box {
+      background: var(--glass-bg);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(14px);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 0 25px rgba(0, 255, 225, 0.05);
+      position: relative;
+    }
+
+    .form-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 2px;
+      background: var(--border-glow);
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
     h1 {
       font-family: 'Orbitron', sans-serif;
-      text-align: center;
-      color: #ff4f1f;
-      margin-top: 24px;
       font-size: 24px;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 24px;
+      text-shadow: var(--text-glow);
     }
-    .form-box {
-      margin-top: 24px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 18px;
-      padding: 24px;
-      backdrop-filter: blur(10px);
-    }
+
     input, select {
       width: 100%;
       padding: 14px;
       background: #111;
-      border: 2px solid #ff4f1f;
+      border: 2px solid transparent;
       border-radius: 12px;
       color: #fff;
       font-size: 15px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       outline: none;
+      transition: 0.2s;
+      box-shadow: 0 0 5px #00ffe1;
     }
+
     input:focus, select:focus {
-      box-shadow: 0 0 8px #ff4f1f;
+      border-color: #ff00ff;
+      box-shadow: 0 0 12px #ff00ff;
     }
+
     .toggle {
       display: flex;
       align-items: center;
@@ -76,41 +123,45 @@
       gap: 10px;
       margin-bottom: 12px;
     }
+
     .neon-button {
       width: 100%;
       padding: 14px;
       font-size: 16px;
       font-weight: bold;
-      border: 2px solid #ff4f1f;
+      border: 2px solid #00ffe1;
       background: transparent;
-      color: #ff4f1f;
+      color: #00ffe1;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(0, 255, 225, 0.3);
     }
+
     .neon-button:hover {
-      background: #ff4f1f;
+      background: #00ffe1;
       color: #000;
     }
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #888;
-      font-size: 12px;
-      padding-bottom: 40px;
-    }
+
     .return-btn {
       position: fixed;
       top: 20px;
       left: 20px;
       padding: 8px 14px;
-      border: 2px solid #ff4f1f;
+      border: 2px solid #00ffe1;
       background: #111;
-      color: #ff4f1f;
+      color: #00ffe1;
       font-size: 13px;
       font-weight: bold;
       border-radius: 10px;
       z-index: 999;
+    }
+
+    footer {
+      text-align: center;
+      color: #999;
+      padding: 40px 0;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -119,20 +170,18 @@
 <a href="https://quantum-vault-y2kxroast.netlify.app/" class="return-btn">← Return to Vault</a>
 
 <header>
-  <img class="logo" src="https://raw.githubusercontent.com/LandoCrissian/RoastRecords/refs/heads/main/IMG_5445.jpeg" alt="ROAST Logo">
+  <div class="logo"></div>
 </header>
 
 <div class="container">
-  <h1>Submit a Track to ROAST Records</h1>
-
   <div class="form-box">
+    <h1>Submit a Track to ROAST Records</h1>
     <form id="trackForm">
       <select id="trackType">
         <option value="Anthem">Anthem</option>
         <option value="Theme Song">Theme Song</option>
         <option value="Roast">Roast</option>
       </select>
-
       <input type="text" id="projectName" placeholder="Project or Person Name" required />
       <input type="text" id="genre" placeholder="Genre / Mood" />
       <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" />
@@ -149,7 +198,7 @@
 
       <div class="toggle">
         <input type="checkbox" id="isProject" />
-        <label for="isProject">This is a token/project (Buyback eligible)</label>
+        <label for="isProject">Is this for a token/project? (Buyback eligible)</label>
       </div>
 
       <button type="button" class="neon-button" onclick="submitTrack()">Submit – 20 CRO</button>
@@ -158,15 +207,82 @@
   </div>
 </div>
 
-<footer>
-  Powered by Y2K x $ROAST — Vault Certified 2000 → ∞
-</footer>
+  <!-- SCRIPTS -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-<script>
-  function toggleMint() {
-    document.getElementById("mintOptions").style.display = document.getElementById("mintRequest").checked ? "block" : "none";
+const firebaseConfig = {
+  apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+  authDomain: "y2k-arcade.firebaseapp.com",
+  projectId: "y2k-arcade",
+  storageBucket: "y2k-arcade.appspot.com",
+  messagingSenderId: "1063043176357",
+  appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let currentWallet = "";
+const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
+
+async function connectWallet() {
+  if (!window.ethereum) return alert("Please install MetaMask");
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  const signer = provider.getSigner();
+  currentWallet = (await signer.getAddress()).toLowerCase();
+
+  const snap = await getDoc(doc(db, "users", currentWallet));
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data.username) document.getElementById("handleInput").value = "@" + data.xHandle;
   }
-</script>
+}
 
+async function submitTrack() {
+  const type = document.getElementById("trackType").value;
+  const name = document.getElementById("projectName").value.trim();
+  const genre = document.getElementById("genre").value.trim();
+  const handle = document.getElementById("handleInput").value.trim();
+  const mint = document.getElementById("mintRequest").checked;
+  const mintMax = document.getElementById("mintCount").value;
+  const mintPrice = document.getElementById("mintPrice").value;
+  const isProject = document.getElementById("isProject").checked;
+
+  if (!name) return alert("Enter a project or person name.");
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const tx = await signer.sendTransaction({
+    to: CRO_RECIPIENT,
+    value: ethers.utils.parseEther("20")
+  });
+
+  const trackData = {
+    wallet: currentWallet,
+    type,
+    name,
+    genre,
+    handle,
+    mint,
+    mintMax: mint ? mintMax : null,
+    mintPrice: mint ? mintPrice : null,
+    isProject,
+    txHash: tx.hash,
+    timestamp: Date.now()
+  };
+
+  await addDoc(collection(db, "tracks"), trackData);
+  document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted!</span>`;
+  document.getElementById("trackForm").reset();
+  document.getElementById("mintOptions").style.display = "none";
+}
+
+window.addEventListener("load", connectWallet);
+</script>
 </body>
 </html>
