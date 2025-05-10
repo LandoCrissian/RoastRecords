@@ -212,8 +212,6 @@
   </style>
 </head>
 <body>
-
-<!-- Badge Header -->
 <div class="badge-header">
   <div class="badge-info">
     <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
@@ -258,11 +256,11 @@
   </div>
 </div>
 
-  <!-- FIREBASE + LOGIC -->
+  <!-- FIREBASE + JS LOGIC -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp
+  getFirestore, doc, getDoc, addDoc, collection
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -276,7 +274,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
 let currentWallet = "";
 
@@ -286,20 +283,40 @@ function toggleMint() {
 }
 
 async function connectWallet() {
-  if (!window.ethereum) return alert("Please install MetaMask");
+  if (!window.ethereum) return alert("Install MetaMask");
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
   currentWallet = (await signer.getAddress()).toLowerCase();
 
-  const userSnap = await getDoc(doc(db, "users", currentWallet));
-  if (userSnap.exists()) {
-    const data = userSnap.data();
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x19' }]
+    });
+  } catch (switchError) {
+    if (switchError.code === 4902) {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: '0x19',
+          chainName: 'Cronos Mainnet',
+          nativeCurrency: { name: 'CRO', symbol: 'CRO', decimals: 18 },
+          rpcUrls: ['https://evm.cronos.org'],
+          blockExplorerUrls: ['https://cronoscan.com']
+        }]
+      });
+    }
+  }
+
+  const snap = await getDoc(doc(db, "users", currentWallet));
+  if (snap.exists()) {
+    const data = snap.data();
     document.getElementById("badgeNickname").textContent = data.username || "anon";
     document.getElementById("badgeHandle").textContent = "@" + (data.xHandle || "handle");
     document.getElementById("badgePFP").src = data.pfpUrl || `https://api.dicebear.com/6.x/pixel-art/svg?seed=anon`;
-    document.getElementById("handleInput").value = data.xHandle ? `@${data.xHandle}` : "";
+    if (data.xHandle) document.getElementById("handleInput").value = `@${data.xHandle}`;
   }
 }
 
@@ -316,36 +333,7 @@ async function submitTrack() {
   if (!name) return alert("Enter a project or person name.");
   if (!window.ethereum) return alert("Wallet not found");
 
-  const CRO_CHAIN_ID = '0x19';
-  const CRO_PARAMS = [{
-    chainId: CRO_CHAIN_ID,
-    chainName: 'Cronos Mainnet',
-    nativeCurrency: { name: 'CRO', symbol: 'CRO', decimals: 18 },
-    rpcUrls: ['https://evm.cronos.org'],
-    blockExplorerUrls: ['https://cronoscan.com']
-  }];
-
   try {
-    // Force switch to Cronos before continuing
-    const currentChain = await window.ethereum.request({ method: 'eth_chainId' });
-    if (currentChain !== CRO_CHAIN_ID) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: CRO_CHAIN_ID }]
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: CRO_PARAMS
-          });
-        } else {
-          throw switchError;
-        }
-      }
-    }
-
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
 
