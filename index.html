@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ROAST Records – Vault Studio</title>
+  <meta name="theme-color" content="#00ffe1" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+    body {
+      background: #000;
+      color: #fff;
+      padding: 16px;
+    }
+    .section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(14px);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .title {
+      font-size: 22px;
+      color: #00ffe1;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #00ffe1;
+      margin-bottom: 16px;
+    }
+    .neon-button {
+      background: transparent;
+      border: 2px solid #00ffe1;
+      color: #00ffe1;
+      padding: 12px 16px;
+      font-weight: bold;
+      width: 100%;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    .neon-button:hover {
+      background: #00ffe1;
+      color: #000;
+    }
+    .player-badge {
+      display: flex;
+      align-items: center;
+      background: #111;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #00ffe1;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .player-badge img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+      border: 2px solid inherit;
+    }
+    .badge-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .badge-info .nickname { color: #00ffe1; font-weight: bold; }
+    .badge-info .handle { color: #ccc; font-size: 12px; }
+    .badge-stats { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #111;
+      border: 2px solid #00ffe1;
+      color: #00ffe1;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 10px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Back to Vault Button -->
+<a href="https://quantum-vault-y2kxroast.netlify.app/" class="back-button">← Back to Vault</a>
+
+<!-- Player Badge -->
+<div class="player-badge" id="playerBadge">
+  <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" alt="PFP" />
+  <div class="badge-info">
+    <div class="nickname" id="badgeNickname">anon</div>
+    <div class="handle" id="badgeHandle">𝕏: @handle</div>
+    <div class="badge-stats">
+      <span id="badgeGames">Games: 0</span>
+      <span id="badgeWins">Wins: 0</span>
+      <span id="badgeY2K">Y2K: 0</span>
+    </div>
+  </div>
+</div>
+
+<!-- Submission Section -->
+<div class="section">
+  <div class="title">Submit a Track to ROAST Records</div>
+  <form id="trackForm">
+    <select id="trackType" class="form-input">
+      <option value="Anthem">Anthem</option>
+      <option value="Theme Song">Theme Song</option>
+      <option value="Roast">Roast</option>
+    </select>
+    <input type="text" id="projectName" placeholder="Project or Person Name" class="form-input" required>
+    <input type="text" id="genre" placeholder="Genre / Mood" class="form-input">
+    <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" class="form-input">
+    
+    <label style="font-size:14px;">
+      <input type="checkbox" id="mintRequest" onchange="toggleMint()"> Mint this track?
+    </label>
+    
+    <div id="mintOptions" style="display:none;">
+      <input type="number" id="mintCount" class="form-input" min="1" max="10" value="10" placeholder="Number of NFTs (1–10)">
+      <input type="number" id="mintPrice" class="form-input" min="1" value="50" placeholder="Mint Price (CRO)">
+    </div>
+
+    <label style="font-size:14px;">
+      <input type="checkbox" id="isProject"> Is this for a token/project? (buyback eligible)
+    </label>
+
+    <button type="button" class="neon-button mt-4" onclick="submitTrack()">Submit – 20 CRO</button>
+    <div id="submissionStatus" class="text-center text-sm text-pink-400 mt-4"></div>
+  </form>
+</div>
+
+<!-- Next: Firebase, WalletConnect, Form Prefill -->
+<script type="module">
+// Placeholder for Part 2 logic
+function toggleMint() {
+  const checked = document.getElementById("mintRequest").checked;
+  document.getElementById("mintOptions").style.display = checked ? "block" : "none";
+}
+</script>
+</body>
+</html>
