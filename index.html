@@ -4,15 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ROAST Records – Vault Studio</title>
-  <meta name="theme-color" content="#000000" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     :root {
-      --glass-bg: rgba(255, 255, 255, 0.05);
-      --border-glow: linear-gradient(90deg, #00ffe1, #ff00ff, #ff9900);
-      --primary: #ff4f1f;
-      --text-glow: 0 0 10px rgba(255, 79, 31, 0.6);
+      --glass: rgba(255, 255, 255, 0.05);
+      --glow: linear-gradient(90deg, #00ffe1, #ff00ff, #ff9900);
+      --textGlow: 0 0 12px rgba(255, 79, 31, 0.6);
     }
 
     * {
@@ -24,77 +23,86 @@
       background: #000;
       color: #fff;
       overflow-x: hidden;
-      padding-top: 140px;
     }
 
-    .floating-badge {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+    .badge-header {
+      position: sticky;
+      top: 0;
       z-index: 999;
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-      padding: 12px 18px;
+      background: #000;
+      padding: 14px 20px 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .badge-info {
       display: flex;
       align-items: center;
+      background: var(--glass);
+      border-radius: 14px;
+      padding: 8px 16px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 0 12px rgba(0,255,225,0.1);
+      position: relative;
       gap: 12px;
-      box-shadow: 0 0 16px rgba(0,255,225,0.15);
-      animation: fadein 0.6s ease-out;
+      max-width: 300px;
     }
 
-    .floating-badge::before {
-      content: '';
+    .badge-info::before {
+      content: "";
       position: absolute;
       inset: 0;
-      border-radius: 20px;
+      border-radius: 14px;
       padding: 2px;
-      background: var(--border-glow);
+      background: var(--glow);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: destination-out;
       mask-composite: exclude;
       pointer-events: none;
     }
 
-    @keyframes fadein {
-      from { opacity: 0; transform: translate(-50%, -20px); }
-      to { opacity: 1; transform: translate(-50%, 0); }
-    }
-
-    .floating-badge img {
-      width: 48px;
-      height: 48px;
+    .badge-info img {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      border: 2px solid #00ffe1;
       object-fit: cover;
+      border: 2px solid #00ffe1;
     }
 
-    .badge-info {
+    .badge-details {
       display: flex;
       flex-direction: column;
-      font-size: 13px;
+      justify-content: center;
     }
 
-    .badge-info .nickname {
-      color: #00ffe1;
+    .badge-details .name {
       font-weight: bold;
+      color: #00ffe1;
     }
 
-    .badge-info .handle {
+    .badge-details .handle {
+      font-size: 13px;
       color: #ccc;
     }
 
     .container {
       max-width: 600px;
       margin: auto;
-      padding: 30px 20px 60px;
+      padding: 30px 20px 80px;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      text-align: center;
+      color: #fff;
+      margin: 30px 0 20px;
+      text-shadow: var(--textGlow);
     }
 
     .form-box {
-      background: var(--glass-bg);
+      background: var(--glass);
       border-radius: 20px;
       padding: 28px;
       backdrop-filter: blur(14px);
@@ -110,20 +118,11 @@
       inset: 0;
       border-radius: 20px;
       padding: 2px;
-      background: var(--border-glow);
+      background: var(--glow);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: destination-out;
       mask-composite: exclude;
       pointer-events: none;
-    }
-
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
-      text-align: center;
-      color: #fff;
-      margin-bottom: 24px;
-      text-shadow: var(--text-glow);
     }
 
     input, select {
@@ -134,7 +133,7 @@
       border-radius: 12px;
       color: #fff;
       font-size: 15px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       outline: none;
       transition: 0.2s;
       box-shadow: 0 0 5px #00ffe1;
@@ -145,12 +144,31 @@
       box-shadow: 0 0 12px #ff00ff;
     }
 
-    .toggle {
+    .checkbox-row {
       display: flex;
-      align-items: center;
-      font-size: 13px;
+      align-items: flex-start;
       gap: 10px;
-      margin-bottom: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      margin-top: 4px;
+    }
+
+    .checkbox-row label {
+      color: #ccc;
+      font-size: 14px;
+      max-width: calc(100% - 30px);
+      word-break: break-word;
+    }
+
+    #mintOptions {
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      border: 1px dashed #00ffe1;
     }
 
     .neon-button {
@@ -172,29 +190,43 @@
       color: #000;
     }
 
-    footer {
+    #submissionStatus {
       text-align: center;
-      color: #999;
-      padding: 40px 0;
-      font-size: 12px;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
+    .popup-alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid #00ffe1;
+      box-shadow: 0 0 12px #00ffe1;
+      z-index: 9999;
+      font-size: 14px;
     }
   </style>
 </head>
-
 <body>
 
-<!-- Player Badge (Floating Header) -->
-<div class="floating-badge">
-  <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" alt="pfp" />
+<!-- Badge Header -->
+<div class="badge-header">
   <div class="badge-info">
-    <div class="nickname" id="badgeNickname">anon</div>
-    <div class="handle" id="badgeHandle">@handle</div>
+    <img id="badgePFP" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
+    <div class="badge-details">
+      <div class="name" id="badgeNickname">anon</div>
+      <div class="handle" id="badgeHandle">@handle</div>
+    </div>
   </div>
 </div>
 
 <div class="container">
+  <h1>Submit a Track to ROAST Records</h1>
   <div class="form-box">
-    <h1>Submit a Track to ROAST Records</h1>
     <form id="trackForm">
       <select id="trackType">
         <option value="Anthem">Anthem</option>
@@ -205,7 +237,7 @@
       <input type="text" id="genre" placeholder="Genre / Mood" />
       <input type="text" id="handleInput" placeholder="𝕏 Handle (optional)" />
 
-      <div class="toggle">
+      <div class="checkbox-row">
         <input type="checkbox" id="mintRequest" onchange="toggleMint()" />
         <label for="mintRequest">Mint this track?</label>
       </div>
@@ -215,22 +247,22 @@
         <input type="number" id="mintPrice" placeholder="Mint Price (CRO)" min="1" value="50" />
       </div>
 
-      <div class="toggle">
+      <div class="checkbox-row">
         <input type="checkbox" id="isProject" />
         <label for="isProject">Is this for a token/project? (Buyback eligible)</label>
       </div>
 
       <button type="button" class="neon-button" onclick="submitTrack()">Submit – 20 CRO</button>
-      <div id="submissionStatus" style="text-align:center; margin-top:12px; font-size:13px;"></div>
+      <div id="submissionStatus"></div>
     </form>
   </div>
 </div>
 
-  <!-- Firebase & Submission Script -->
+  <!-- FIREBASE + LOGIC -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, addDoc, collection
+  getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -245,12 +277,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let currentWallet = "";
 const CRO_RECIPIENT = "0x6F351c8eAAA663880Bd3434095Da3db8EDbbD212";
+let currentWallet = "";
 
-// Prefill badge
+function toggleMint() {
+  const mintOptions = document.getElementById("mintOptions");
+  mintOptions.style.display = document.getElementById("mintRequest").checked ? "block" : "none";
+}
+
 async function connectWallet() {
   if (!window.ethereum) return alert("Please install MetaMask");
+
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
@@ -260,19 +297,12 @@ async function connectWallet() {
   if (userSnap.exists()) {
     const data = userSnap.data();
     document.getElementById("badgeNickname").textContent = data.username || "anon";
-    document.getElementById("badgeHandle").textContent = data.xHandle ? `@${data.xHandle}` : "@handle";
-    document.getElementById("badgePFP").src = data.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
-    if (data.xHandle) document.getElementById("handleInput").value = `@${data.xHandle}`;
+    document.getElementById("badgeHandle").textContent = "@" + (data.xHandle || "handle");
+    document.getElementById("badgePFP").src = data.pfpUrl || `https://api.dicebear.com/6.x/pixel-art/svg?seed=anon`;
+    document.getElementById("handleInput").value = data.xHandle ? `@${data.xHandle}` : "";
   }
 }
 
-// Mint toggle logic
-function toggleMint() {
-  const show = document.getElementById("mintRequest").checked;
-  document.getElementById("mintOptions").style.display = show ? "block" : "none";
-}
-
-// Submission logic
 async function submitTrack() {
   const type = document.getElementById("trackType").value;
   const name = document.getElementById("projectName").value.trim();
@@ -283,33 +313,39 @@ async function submitTrack() {
   const mintPrice = document.getElementById("mintPrice").value;
   const isProject = document.getElementById("isProject").checked;
 
-  if (!name) return alert("Enter a name.");
-  if (!currentWallet) return alert("Connect wallet first.");
+  if (!name) return alert("Enter a project or person name.");
+  if (!window.ethereum) return alert("Wallet not found");
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const tx = await signer.sendTransaction({
-    to: CRO_RECIPIENT,
-    value: ethers.utils.parseEther("20")
-  });
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const tx = await signer.sendTransaction({
+      to: CRO_RECIPIENT,
+      value: ethers.utils.parseEther("20")
+    });
 
-  await addDoc(collection(db, "tracks"), {
-    wallet: currentWallet,
-    type,
-    name,
-    genre,
-    handle,
-    mint,
-    mintMax: mint ? mintMax : null,
-    mintPrice: mint ? mintPrice : null,
-    isProject,
-    txHash: tx.hash,
-    timestamp: Date.now()
-  });
+    const track = {
+      wallet: currentWallet,
+      type,
+      name,
+      genre,
+      handle,
+      mint,
+      mintMax: mint ? mintMax : null,
+      mintPrice: mint ? mintPrice : null,
+      isProject,
+      txHash: tx.hash,
+      timestamp: Date.now()
+    };
 
-  document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted!</span>`;
-  document.getElementById("trackForm").reset();
-  toggleMint();
+    await addDoc(collection(db, "tracks"), track);
+    document.getElementById("submissionStatus").innerHTML = `<span style="color:#00ffe1;">✓ Track submitted!</span>`;
+    document.getElementById("trackForm").reset();
+    document.getElementById("mintOptions").style.display = "none";
+  } catch (err) {
+    console.error("Submit error:", err);
+    alert("Submission failed: " + err.message);
+  }
 }
 
 window.addEventListener("load", connectWallet);
